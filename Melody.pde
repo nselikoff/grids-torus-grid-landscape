@@ -4,8 +4,15 @@ class Melody {
   Pulse pulse;
 
   Melody(HE_Mesh mesh) {
-    HE_Vertex v0 = mesh.getVertexWithIndex(int(random(0, mesh.getNumberOfVertices() - 1)));
-    HE_Vertex v1 = mesh.getVertexWithIndex(int(random(0, mesh.getNumberOfVertices() - 1)));
+    int i, j;
+    i = j = 0;
+
+    while (i == j) {
+      i = int(random(0, mesh.getNumberOfVertices() - 1));
+      j = int(random(0, mesh.getNumberOfVertices() - 1));
+    }
+    HE_Vertex v0 = mesh.getVertexWithIndex(i);
+    HE_Vertex v1 = mesh.getVertexWithIndex(j);
     
     WB_MeshGraph graph=new WB_MeshGraph(mesh);
     int[] shortestpath=graph.getShortestPathBetweenVertices(mesh.getIndex(v0), mesh.getIndex(v1));

@@ -19,6 +19,7 @@ PeasyCam cam;
 
 Torus torus;
 ArrayList<Melody> melodies;
+ArrayList<BlinkingFace> blinkingFaces;
 
 WB_Render render;
 
@@ -53,6 +54,11 @@ void setup() {
   melodies = new ArrayList<Melody>();
   for (int i = 0; i < 7; i++) {
     melodies.add(new Melody(torus.getMesh()));
+  }
+
+  blinkingFaces = new ArrayList<BlinkingFace>();
+  for (int i = 0; i < 50; i++) {
+    blinkingFaces.add(new BlinkingFace(torus.getMesh()));
   }
 
   render = new WB_Render(this);
@@ -91,6 +97,11 @@ void draw() {
   for (Melody melody : melodies) {
     melody.draw(render);
   }
+
+  for (BlinkingFace blinkingFace : blinkingFaces) {
+    blinkingFace.draw(render);
+  }
+  emissive(0);
 
   server.sendScreen();
 }
