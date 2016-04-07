@@ -18,8 +18,7 @@ NetAddress myBroadcastLocation;
 PeasyCam cam;
 
 Torus torus;
-Melody melody;
-Pulse pulse;
+ArrayList<Melody> melodies;
 
 WB_Render render;
 
@@ -46,13 +45,16 @@ void setup() {
 
   Ani.init(this);
 
-  smooth(8);
+  // smooth(8);
   frameRate(60);
 
   torus = new Torus();
-  melody = new Melody(torus.getMesh());
-  pulse = new Pulse(melody.getPath());
-  
+
+  melodies = new ArrayList<Melody>();
+  for (int i = 0; i < 7; i++) {
+    melodies.add(new Melody(torus.getMesh()));
+  }
+
   render = new WB_Render(this);
   
   perspective(PI/4, float(width)/float(height), 1.0, 10000.0);
@@ -68,6 +70,10 @@ void update() {
   lightFalloff(0,0,0.0005);
   pointLight(255, 255, 255, 0, 0, 0);
   popMatrix();
+
+  if (frameCount % 60 == 0) {
+    println(frameRate);
+  }
 }
 
 void draw() {
@@ -77,11 +83,14 @@ void draw() {
   translate(150, 0, 20);
   rotateZ(frameCount * 0.001);
 
-  pulse.addLight();
+  lightFalloff(0,0,0.001);
+  for (Melody melody : melodies) {
+    melody.addLight();
+  }
   torus.draw(render);
-  melody.draw(render);
-
-  pulse.draw();
+  for (Melody melody : melodies) {
+    melody.draw(render);
+  }
 
   server.sendScreen();
 }
@@ -118,7 +127,9 @@ void oscEvent(OscMessage theOscMessage) {
   else if (addr.equals("/FromVDMX/Slider8")) {
   }
   else if (addr.equals("/FromVDMX/S1")) {
-     pulse.animate(); 
+    for ( Melody melody : melodies ) {
+      melody.animate();
+    }
   }
   else if (addr.equals("/FromVDMX/M1")) {
   }
@@ -129,5 +140,7 @@ void oscEvent(OscMessage theOscMessage) {
 }
 
 void keyPressed(KeyEvent e) {
-  pulse.animate();
+    for ( Melody melody : melodies ) {
+      melody.animate();
+    }
 }

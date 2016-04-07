@@ -22,11 +22,11 @@ class Pulse {
     seq = new AniSequence(sketch_torus_grid_landscape.this);
     seq.beginSequence();
 
-    for (int i = 1; i < path.getPathOrder() + 1; i++) {
+    for (int i = 0; i < vertices.size(); i++) {
       seq.beginStep();
-      seq.add(Ani.to(this, 0.05, "pulsePositionX", vertices.get(i).xf(), Ani.LINEAR));
-      seq.add(Ani.to(this, 0.05, "pulsePositionY", vertices.get(i).yf(), Ani.LINEAR));
-      seq.add(Ani.to(this, 0.05, "pulsePositionZ", vertices.get(i).zf(), Ani.LINEAR));
+      seq.add(Ani.to(this, 0.5, "pulsePositionX", vertices.get(i).xf(), Ani.LINEAR));
+      seq.add(Ani.to(this, 0.5, "pulsePositionY", vertices.get(i).yf(), Ani.LINEAR));
+      seq.add(Ani.to(this, 0.5, "pulsePositionZ", vertices.get(i).zf(), Ani.LINEAR));
       seq.endStep();
     }
     
