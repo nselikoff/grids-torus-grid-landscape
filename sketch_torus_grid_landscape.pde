@@ -23,13 +23,16 @@ HE_Halfedge edge;
 HE_Path path;
 ArrayList<HE_Vertex> vertices;
 
+PShader tunnelShader, tunnelLineShader;
+PImage dummyTexture;
+
 //int screenWidth = 1280, screenHeight = 289;
 int screenWidth = 1920, screenHeight = 434;
 
 AniSequence seq;
 float pulsePositionX, pulsePositionY, pulsePositionZ;
 
-float camRotateX = 0;
+float camRotateX = 90;
 float camRotateY = 0;
 float camRotateZ = 0;
 
@@ -79,6 +82,8 @@ void setup() {
   
   mesh.modify(new HEM_TriSplit());
 
+  mesh.flipAllFaces();
+
   edge = mesh.getEdgeWithIndex(0);
   //path = new HE_Path(edge);
   HE_Vertex v0 = mesh.getVertexWithIndex(0);
@@ -125,6 +130,18 @@ void setup() {
   
   perspective(PI/4, float(width)/float(height), 1.0, 10000.0);
   cam = new PeasyCam(this, 0);
+
+  tunnelShader = loadShader("tunnelfrag.glsl", "tunnelvert.glsl");
+  tunnelLineShader = loadShader("tunnellinefrag.glsl", "tunnellinevert.glsl");
+  dummyTexture = createImage(128, 128, RGB);
+  dummyTexture.loadPixels();
+  for (int i = 0; i < dummyTexture.pixels.length; i++) {
+    dummyTexture.pixels[i] = color(random(0,255), random(0,255), random(0,255)); 
+  }
+  dummyTexture.updatePixels();
+
+
+  blendMode(ADD);
 }
 
 void update() {
@@ -134,7 +151,7 @@ void update() {
   //directionalLight(64, 64, 64, -1, -2, 1);
   pushMatrix();
   translate(0, 70, 25);
-  lightFalloff(0,0,0.001);
+  lightFalloff(0,0,0.0005);
   pointLight(255, 255, 255, 0, 0, 0);
   popMatrix();
   
@@ -157,11 +174,15 @@ void draw() {
   popMatrix();
 
   fill(255);
-  stroke(0, 255, 255, 16);
-  strokeWeight(2);
+  stroke(0, 32, 32);
+  strokeWeight(3);
   //noStroke();
   //render.drawEdges(mesh);
-  render.drawFaces(mesh);
+  shader(tunnelShader);
+  shader(tunnelLineShader, LINES);
+  tunnelShader.set("modelviewInv", ((PGraphicsOpenGL) g).modelviewInv);
+  render.drawFaces(mesh, dummyTexture);
+  resetShader();
  
   stroke(255, 0, 0);
   noFill();
