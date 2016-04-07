@@ -17,20 +17,14 @@ NetAddress myBroadcastLocation;
 
 PeasyCam cam;
 
-HE_Mesh mesh;
-WB_Render render;
-HE_Halfedge edge;
-HE_Path path;
-ArrayList<HE_Vertex> vertices;
+Torus torus;
+Melody melody;
+Pulse pulse;
 
-PShader tunnelShader, tunnelLineShader;
-PImage dummyTexture;
+WB_Render render;
 
 //int screenWidth = 1280, screenHeight = 289;
 int screenWidth = 1920, screenHeight = 434;
-
-AniSequence seq;
-float pulsePositionX, pulsePositionY, pulsePositionZ;
 
 float camRotateX = 90;
 float camRotateY = 0;
@@ -54,154 +48,42 @@ void setup() {
 
   smooth(8);
   frameRate(60);
-  
-  mesh = new HE_Mesh(
-    new HEC_Torus()
-      .setRadius(50, 150)
-      .setTubeFacets(12)
-      .setTorusFacets(24)
-      //.setTwist(12)
-  );
-  
-  // for some reason have to do this in two steps
-  HE_Vertex v;
-  Iterator<HE_Vertex> vItr = mesh.vItr();
-  ArrayList<WB_Coord> normals = new ArrayList<WB_Coord>();
-  while (vItr.hasNext()) {
-    v = vItr.next();
-    normals.add(v.getVertexNormal());
-  }
-  Iterator<WB_Coord> vnItr = normals.iterator();
-  vItr = mesh.vItr();
-  WB_Coord n;
-  while (vItr.hasNext()) {
-    v = vItr.next();
-    n = vnItr.next();
-    v.addMulSelf(random(-10,10), n);
-  }
-  
-  mesh.modify(new HEM_TriSplit());
 
-  mesh.flipAllFaces();
-
-  edge = mesh.getEdgeWithIndex(0);
-  //path = new HE_Path(edge);
-  HE_Vertex v0 = mesh.getVertexWithIndex(0);
-  HE_Vertex v1 = mesh.getVertexWithIndex(100);
+  torus = new Torus();
+  melody = new Melody(torus.getMesh());
+  pulse = new Pulse(melody.getPath());
   
-  WB_MeshGraph graph=new WB_MeshGraph(mesh);
-  int[] shortestpath=graph.getShortestPathBetweenVertices(mesh.getIndex(v0), mesh.getIndex(v1));
-  path = mesh.createPathFromIndices(shortestpath,false);
-  
-  println(path.getPathOrder());
-  
-  vertices = new ArrayList<HE_Vertex>();
-  //vertices.add(v0);
-  //for( HE_Vertex neighbor : v0.getNextNeighborVertices() ) {
-  //  vertices.add(neighbor);
-  //}
-  
-  Iterator<HE_Vertex> pathVertexItr = new HE_PathVertexIterator(path);
-  while (pathVertexItr.hasNext()) {
-    vertices.add(pathVertexItr.next());
-  }
-    
-  seq = new AniSequence(this);
-  seq.beginSequence();
-
-  pulsePositionX = vertices.get(0).xf();
-  pulsePositionY = vertices.get(0).yf();
-  pulsePositionZ = vertices.get(0).zf();
-
-  for (int i = 1; i < path.getPathOrder() + 1; i++) {
-    seq.beginStep();
-    seq.add(Ani.to(this, 0.05, "pulsePositionX", vertices.get(i).xf(), Ani.LINEAR));
-    seq.add(Ani.to(this, 0.05, "pulsePositionY", vertices.get(i).yf(), Ani.LINEAR));
-    seq.add(Ani.to(this, 0.05, "pulsePositionZ", vertices.get(i).zf(), Ani.LINEAR));
-    seq.endStep();
-  }
-  
-  seq.endSequence();
-
-  // start the whole sequence
-  seq.start();
-    
   render = new WB_Render(this);
   
   perspective(PI/4, float(width)/float(height), 1.0, 10000.0);
   cam = new PeasyCam(this, 0);
 
-  tunnelShader = loadShader("tunnelfrag.glsl", "tunnelvert.glsl");
-  tunnelLineShader = loadShader("tunnellinefrag.glsl", "tunnellinevert.glsl");
-  dummyTexture = createImage(128, 128, RGB);
-  dummyTexture.loadPixels();
-  for (int i = 0; i < dummyTexture.pixels.length; i++) {
-    dummyTexture.pixels[i] = color(random(0,255), random(0,255), random(0,255)); 
-  }
-  dummyTexture.updatePixels();
-
-
   blendMode(ADD);
 }
 
 void update() {
-  //edge = edge.getNextInFace();
-
-  //directionalLight(64, 64, 64, 1, 2, -1);
-  //directionalLight(64, 64, 64, -1, -2, 1);
+  cam.setRotations(camRotateX, camRotateY, camRotateZ);
   pushMatrix();
   translate(0, 70, 25);
   lightFalloff(0,0,0.0005);
   pointLight(255, 255, 255, 0, 0, 0);
   popMatrix();
-  
 }
 
 void draw() {
-  cam.setRotations(camRotateX, camRotateY, camRotateZ);
-
   update();
   
   background(0);
   translate(150, 0, 20);
   rotateZ(frameCount * 0.001);
 
-  pushMatrix();
-  translate(pulsePositionX, pulsePositionY, pulsePositionZ);
-  translate(-10, 0, -10);
-  lightFalloff(0, 0, 0.01);
-  pointLight(255, 0, 0, 0, 0, 0);
-  popMatrix();
+  pulse.addLight();
+  torus.draw(render);
+  melody.draw(render);
 
-  fill(255);
-  stroke(0, 32, 32);
-  strokeWeight(3);
-  //noStroke();
-  //render.drawEdges(mesh);
-  shader(tunnelShader);
-  shader(tunnelLineShader, LINES);
-  tunnelShader.set("modelviewInv", ((PGraphicsOpenGL) g).modelviewInv);
-  render.drawFaces(mesh, dummyTexture);
-  resetShader();
- 
-  stroke(255, 0, 0);
-  noFill();
-  //render.drawEdge(edge);
-  render.drawPath(path);
-
-//  for (HE_Vertex v : vertices) {
-//   render.drawPoint(v, 10);
-//  }
-  pushMatrix();
-  translate(pulsePositionX, pulsePositionY, pulsePositionZ);
-  sphere(1);
-  popMatrix();
+  pulse.draw();
 
   server.sendScreen();
-}
-
-void startSequence() {
-  seq.start();
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */
@@ -236,7 +118,7 @@ void oscEvent(OscMessage theOscMessage) {
   else if (addr.equals("/FromVDMX/Slider8")) {
   }
   else if (addr.equals("/FromVDMX/S1")) {
-     startSequence(); 
+     pulse.animate(); 
   }
   else if (addr.equals("/FromVDMX/M1")) {
   }
@@ -244,4 +126,8 @@ void oscEvent(OscMessage theOscMessage) {
   }
 
   // theOscMessage.print();
+}
+
+void keyPressed(KeyEvent e) {
+  pulse.animate();
 }
