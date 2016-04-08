@@ -56,7 +56,6 @@ class Torus {
 
     fill(255);
     stroke(0, 32, 32);
-    strokeWeight(3);
     //noStroke();
     //render.drawEdges(mesh);
     shader(tunnelShader);

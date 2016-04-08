@@ -93,11 +93,16 @@ void draw() {
   for (Melody melody : melodies) {
     melody.addLight();
   }
+
+  strokeWeight(3);
   torus.draw(render);
+
+  strokeWeight(5);
   for (Melody melody : melodies) {
     melody.draw(render);
   }
 
+  strokeWeight(3);
   for (BlinkingFace blinkingFace : blinkingFaces) {
     blinkingFace.draw(render);
   }

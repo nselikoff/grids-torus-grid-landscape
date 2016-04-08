@@ -10,6 +10,7 @@ class BlinkingFace {
     int faceIndex = int(random(0, numFaces));
     face = mesh.getFaceWithIndex(faceIndex);
     intensityOffset = random(0, 100);
+
     fillColor = color(int(random(0,2))*255, int(random(0,2))*255, int(random(0,2))*255);
     if (red(fillColor) == 0 && green(fillColor) == 0 && blue(fillColor) == 0) {
       fillColor = color(0, 255, 0);
