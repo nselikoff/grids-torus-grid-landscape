@@ -39,20 +39,42 @@ class Melody {
     for( int i = 0; i < length - 1; i++ ) {
       List<HE_Vertex> neighbors = v.getNeighborVertices();
       // println("got " + neighbors.size() + " neighbors");
-      int neighborIndex = 0;
-      while(vertices.size() < i + 2 && neighborIndex < neighbors.size()) {
-        if (vertices.contains(neighbors.get(neighborIndex))) {
-          neighborIndex++;
-        } else {
-          v = neighbors.get(neighborIndex);
-          // println("adding " + v);
-          vertices.add(v);
-          indices[i + 1] = mesh.getIndex(v);
+      if (random(0, 1) > 0.5) {
+        // forwards
+        int neighborIndex = 0;
+        while(vertices.size() < i + 2 && neighborIndex < neighbors.size()) {
+          if (vertices.contains(neighbors.get(neighborIndex))) {
+            neighborIndex++;
+          } else {
+            v = neighbors.get(neighborIndex);
+            // println("adding " + v);
+            vertices.add(v);
+            indices[i + 1] = mesh.getIndex(v);
+          }
+        }
+      } else {
+        // backwards
+        int neighborIndex = neighbors.size() - 1;
+        while(vertices.size() < i + 2 && neighborIndex >= 0) {
+          if (vertices.contains(neighbors.get(neighborIndex))) {
+            neighborIndex--;
+          } else {
+            v = neighbors.get(neighborIndex);
+            // println("adding " + v);
+            vertices.add(v);
+            indices[i + 1] = mesh.getIndex(v);
+          }
         }
       }
     }
 
-    path = mesh.createPathFromIndices(indices, false);
+    try {
+      path = mesh.createPathFromIndices(indices, false);
+    } catch(Exception e) {
+      println(e.getMessage());
+      println("error creating path, trying again");
+      constructRandomPath2();
+    }
     // println(path);
   }
 
@@ -104,10 +126,10 @@ class Melody {
     }
   }
 
-  void draw(WB_Render render) {
+  void draw(WB_Render render, float alpha) {
     update();
 
-    stroke(255, 0, 0);
+    stroke(255, 0, 0, 255 * alpha);
     noFill();
     // render.drawPath(path);
 
@@ -121,7 +143,7 @@ class Melody {
     // pulse.draw();
   }
 
-  void addLight() {
+  void addLight(float alpha) {
     // pulse.addLight();
     WB_Coord center = pathEdges.get(counter).getHalfedgeCenter();
     WB_Coord normal = pathEdges.get(counter).getEdgeNormal();
@@ -131,7 +153,7 @@ class Melody {
     translate(normal.xf() * 1.0, normal.yf() * 1.0, normal.zf() * 1.0);
     // translate(-10, 0, -10);
     lightFalloff(0, 0, 0.003);
-    pointLight(255, 0, 0, 0, 0, 0);
+    pointLight(255 * alpha, 0, 0, 0, 0, 0);
     popMatrix();    
   }
 

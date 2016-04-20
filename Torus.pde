@@ -52,12 +52,11 @@ class Torus {
     dummyTexture.updatePixels();    
   }
 
-  void draw(WB_Render render) {
+  void draw(WB_Render render, float edgeAlpha, float faceAlpha) {
 
     fill(255);
-    stroke(0, 32, 32);
-    //noStroke();
-    //render.drawEdges(mesh);
+    tint(255, 255 * faceAlpha);
+    stroke(0, 32, 32, 255 * edgeAlpha);
     shader(tunnelShader);
     shader(tunnelLineShader, LINES);
     tunnelShader.set("modelviewInv", ((PGraphicsOpenGL) g).modelviewInv);

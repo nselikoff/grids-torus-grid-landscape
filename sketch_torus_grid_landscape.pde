@@ -29,6 +29,14 @@ int screenWidth = 1920, screenHeight = 434;
 float camRotateX = 90;
 float camRotateY = 0;
 float camRotateZ = 0;
+float newCamRotateX = 90;
+float newCamRotateY = 0;
+float newCamRotateZ = 0;
+
+float echoAlpha = 0;
+float melodyAlpha = 0;
+float tunnelEdgeAlpha = 0;
+float tunnelFaceAlpha = 0;
 
 void settings() {
   size(screenWidth, screenHeight, P3D);
@@ -70,7 +78,11 @@ void setup() {
 }
 
 void update() {
+  camRotateX = lerp(camRotateX, newCamRotateX, 0.05);
+  camRotateY = lerp(camRotateY, newCamRotateY, 0.05);
+  camRotateZ = lerp(camRotateZ, newCamRotateZ, 0.05);
   cam.setRotations(camRotateX, camRotateY, camRotateZ);
+
   pushMatrix();
   translate(0, 70, 25);
   lightFalloff(0,0,0.0005);
@@ -91,20 +103,20 @@ void draw() {
 
   lightFalloff(0,0,0.001);
   for (Melody melody : melodies) {
-    melody.addLight();
+    melody.addLight(melodyAlpha);
   }
 
   strokeWeight(3);
-  torus.draw(render);
+  torus.draw(render, tunnelEdgeAlpha, tunnelFaceAlpha);
 
   strokeWeight(5);
   for (Melody melody : melodies) {
-    melody.draw(render);
+    melody.draw(render, melodyAlpha);
   }
 
   strokeWeight(3);
   for (BlinkingFace blinkingFace : blinkingFaces) {
-    blinkingFace.draw(render);
+    blinkingFace.draw(render, echoAlpha);
   }
   emissive(0);
 
@@ -126,30 +138,35 @@ void oscEvent(OscMessage theOscMessage) {
   if (addr.equals("/FromVDMX/Slider1")) {
   }
   else if (addr.equals("/FromVDMX/Slider2")) {
-    camRotateX = map(floatVal, 0, 1, -PI, PI);
+    // newCamRotateX = map(floatVal, 0, 1, -PI, PI);
   }
   else if (addr.equals("/FromVDMX/Slider3")) {
-    camRotateY = map(floatVal, 0, 1, -PI, PI); 
+    // newCamRotateY = map(floatVal, 0, 1, -PI, PI); 
   }
   else if (addr.equals("/FromVDMX/Slider4")) {
-    camRotateZ = map(floatVal, 0, 1, -PI, PI); 
+    // newCamRotateZ = map(floatVal, 0, 1, -PI, PI); 
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
+    echoAlpha = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider6")) {
+    melodyAlpha = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider7")) {
+    tunnelEdgeAlpha = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider8")) {
-  }
-  else if (addr.equals("/FromVDMX/S1")) {
-    for ( Melody melody : melodies ) {
-      melody.animate();
-    }
+    tunnelFaceAlpha = floatVal;
   }
   else if (addr.equals("/FromVDMX/M1")) {
+    for ( Melody melody : melodies ) {
+      melody.init();
+    }
   }
   else if (addr.equals("/FromVDMX/R1")) {
+    for ( BlinkingFace blinkingFace : blinkingFaces ) {
+      blinkingFace.init();
+    }
   }
 
   // theOscMessage.print();
