@@ -31,7 +31,7 @@ class BlinkingFace {
     update();
 
     // fill(fillColor);
-    fill(fillColor, 32 * alpha);
+    fill(fillColor, 64 * alpha);
     stroke(fillColor, 255 * alpha);
     emissive(red(fillColor)*intensity*alpha, green(fillColor)*intensity*alpha, blue(fillColor)*intensity*alpha);
     render.drawFace(face);

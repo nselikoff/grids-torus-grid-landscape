@@ -118,7 +118,7 @@ class Melody {
   }
 
   void update() {
-    if (frameCount % 5 == 0) {
+    if (frameCount % 20 == 0) {
       counter = (counter + 1) % pathOrder;
       // if (counter == 0) {
       //   init();

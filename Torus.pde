@@ -57,7 +57,7 @@ class Torus {
 
     fill(255);
     tint(255, 255 * faceAlpha);
-    stroke(0, 32, 32, 255 * edgeAlpha);
+    stroke(0, 64, 64, 255 * edgeAlpha);
     shader(tunnelShader);
     shader(tunnelLineShader, LINES);
     tunnelShader.set("modelviewInv", ((PGraphicsOpenGL) g).modelviewInv);
@@ -71,7 +71,7 @@ class Torus {
 
   void animateRing() {
     time = 0.0;
-    Ani.to(this, 2.0, "time", 1.0, Ani.LINEAR);
+    Ani.to(this, 4.0, "time", 1.0, Ani.LINEAR);
   }
 
 };

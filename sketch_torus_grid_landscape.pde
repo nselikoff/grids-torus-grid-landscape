@@ -29,9 +29,6 @@ int screenWidth = 1920, screenHeight = 434;
 float camRotateX = 90;
 float camRotateY = 0;
 float camRotateZ = 0;
-float newCamRotateX = 90;
-float newCamRotateY = 0;
-float newCamRotateZ = 0;
 
 float echoAlpha = 0;
 float melodyAlpha = 0;
@@ -60,7 +57,7 @@ void setup() {
   torus = new Torus();
 
   melodies = new ArrayList<Melody>();
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 6; i++) {
     melodies.add(new Melody(torus.getMesh()));
   }
 
@@ -73,20 +70,17 @@ void setup() {
   
   perspective(PI/4, float(width)/float(height), 1.0, 10000.0);
   cam = new PeasyCam(this, 0);
+  cam.setRotations(camRotateX, camRotateY, camRotateZ);
 
   blendMode(ADD);
 }
 
 void update() {
-  camRotateX = lerp(camRotateX, newCamRotateX, 0.05);
-  camRotateY = lerp(camRotateY, newCamRotateY, 0.05);
-  camRotateZ = lerp(camRotateZ, newCamRotateZ, 0.05);
-  cam.setRotations(camRotateX, camRotateY, camRotateZ);
-
   pushMatrix();
   translate(0, 70, 25);
   lightFalloff(0,0,0.0005);
   pointLight(255, 255, 255, 0, 0, 0);
+  ambientLight(128, 128, 128);
   popMatrix();
 
   if (frameCount % 60 == 0) {
@@ -101,7 +95,8 @@ void draw() {
   translate(150, 0, 20);
   rotateZ(frameCount * 0.001);
 
-  lightFalloff(0,0,0.001);
+  lightFalloff(0,0,0.0008);
+  strokeWeight(2);
   for (Melody melody : melodies) {
     melody.addLight(melodyAlpha);
   }
@@ -138,13 +133,10 @@ void oscEvent(OscMessage theOscMessage) {
   if (addr.equals("/FromVDMX/Slider1")) {
   }
   else if (addr.equals("/FromVDMX/Slider2")) {
-    // newCamRotateX = map(floatVal, 0, 1, -PI, PI);
   }
   else if (addr.equals("/FromVDMX/Slider3")) {
-    // newCamRotateY = map(floatVal, 0, 1, -PI, PI); 
   }
   else if (addr.equals("/FromVDMX/Slider4")) {
-    // newCamRotateZ = map(floatVal, 0, 1, -PI, PI); 
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
     echoAlpha = floatVal;

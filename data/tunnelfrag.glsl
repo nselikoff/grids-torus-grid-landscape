@@ -125,10 +125,13 @@ void main() {
   float val = (val1 + val2 + val3 + val4 + val5 + val6) / 6.0;
   vec4 proceduralColor = vec4(val * 1.0, val * 0.48, val * 0.08, 1.0);
 
-  float around = vertTexCoord.s * 256; // around the torus, 0 to 1
+  float around = vertTexCoord.s * 128; // around the torus, 0 to 1
   vec4 ringColor = vec4(smoothstep(around - 0.02, around - 0.019, time) * (1 - smoothstep(around + 0.019, around + 0.02, time)));
   proceduralColor = proceduralColor * vertColor;
-  ringColor.a = proceduralColor.a;
 
-  gl_FragColor = proceduralColor * vertColor + ringColor;
+  vec4 finalColor = proceduralColor * vertColor;
+  if (time > 0.0 && time < 1.0) {
+    finalColor.rgb = finalColor.rgb + ringColor.rgb;
+  }
+  gl_FragColor = finalColor;
 }
