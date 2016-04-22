@@ -107,6 +107,7 @@ float snoise(vec3 v)
 }
 
 uniform sampler2D texture;
+uniform float time;
 
 varying vec3 vertPosition;
 varying vec4 vertColor;
@@ -123,5 +124,11 @@ void main() {
   float val6 = snoise(stretchedVertPosition * 1.6);
   float val = (val1 + val2 + val3 + val4 + val5 + val6) / 6.0;
   vec4 proceduralColor = vec4(val * 1.0, val * 0.48, val * 0.08, 1.0);
-  gl_FragColor = proceduralColor * vertColor;
+
+  float around = vertTexCoord.s * 256; // around the torus, 0 to 1
+  vec4 ringColor = vec4(smoothstep(around - 0.02, around - 0.019, time) * (1 - smoothstep(around + 0.019, around + 0.02, time)));
+  proceduralColor = proceduralColor * vertColor;
+  ringColor.a = proceduralColor.a;
+
+  gl_FragColor = proceduralColor * vertColor + ringColor;
 }

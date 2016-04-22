@@ -45,7 +45,7 @@ void settings() {
 
 void setup() {
   // Create syhpon server to send frames out.
-  server = new SyphonServer(this, "sketch_thread_lattice");
+  server = new SyphonServer(this, "torus_grid_landscape");
 
   /* create a new instance of oscP5. 
    * 12000 is the port number you are listening for incoming osc messages.
@@ -167,6 +167,9 @@ void oscEvent(OscMessage theOscMessage) {
     for ( BlinkingFace blinkingFace : blinkingFaces ) {
       blinkingFace.init();
     }
+  }
+  else if (addr.equals("/FromVDMX/S3")) {
+    torus.animateRing();
   }
 
   // theOscMessage.print();

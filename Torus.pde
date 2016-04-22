@@ -2,6 +2,7 @@ class Torus {
 
   HE_Mesh mesh;
   PShader tunnelShader, tunnelLineShader;
+  float time;
   PImage dummyTexture;
 
   Torus() {
@@ -60,11 +61,17 @@ class Torus {
     shader(tunnelShader);
     shader(tunnelLineShader, LINES);
     tunnelShader.set("modelviewInv", ((PGraphicsOpenGL) g).modelviewInv);
+    tunnelShader.set("time", time);
     render.drawFaces(mesh, dummyTexture);
     resetShader();
 
   }
 
   HE_Mesh getMesh() { return mesh; }
+
+  void animateRing() {
+    time = 0.0;
+    Ani.to(this, 2.0, "time", 1.0, Ani.LINEAR);
+  }
 
 };
